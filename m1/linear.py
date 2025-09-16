@@ -3,13 +3,13 @@ import matplotlib.pyplot as plt
 import matplotlib.animation as animation
 from scipy.integrate import solve_ivp
 
-g = 9.81  # free fall acceleration
-k = 0.1  # resistance coefficient
-m = 0.100   # mass of stone
+g = 9.81                  # free fall acceleration
+k = 0.1                   # resistance coefficient
+m = 0.100                 # mass of stone
 
-initial_velocity = 20.0  # Initial velocity in m/s
+initial_velocity = 20.0   # Initial velocity in m/s
 angle_of_projection = 45  # Angle in degrees
-time_step = 0.05  # Time step in seconds
+time_step = 0.05          # Time step in seconds
 
 
 def symbolic_linear(v0, theta, dt=0.05):
@@ -53,7 +53,7 @@ def equations(t, state):
 
 
 def numeric_linear(v0, theta, dt=0.05):
-    t_land = 2 * v0 * np.sin(theta) * (1 - k) / g
+    t_land = 2 * v0 * np.sin(np.radians(theta)) * (1 - k) / g
     t_span = (0, t_land)
     t_eval = np.linspace(t_span[0], t_span[1], 100)
 
@@ -67,10 +67,8 @@ def numeric_linear(v0, theta, dt=0.05):
                          t_eval=t_eval)
 
     print(solution.y[2])
+
     return solution.y[0], solution.y[2]
-    # x = solution.y[0]
-    # y = solution.y[2]
-    # t = solution.t
 
 
 traj_symbolic_x, traj_symbolic_y = symbolic_linear(
