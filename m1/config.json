@@ -1,0 +1,10 @@
+{
+    "g": 9.81,
+    "m": 0.100,
+    "C_d": 0.47,
+    "k": 0.1,
+    "initial_velocity": 100.0,
+    "angle_of_projection": 45.0,
+    "r": 0.02,
+    "rho": 1.225
+}

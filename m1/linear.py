@@ -1,11 +1,18 @@
 import numpy as np
 import matplotlib.pyplot as plt
-import matplotlib.animation as animation
 from scipy.integrate import solve_ivp
+import json
 
-g = 9.81                  # free fall acceleration
-k = 0.1                   # resistance coefficient
-m = 0.100                 # mass of stone
+# -------- config ---------
+with open("config.json", "r") as f:
+    params = json.load(f)
+
+g = params.get("g", 9.81)                       # free fall acceleration
+k = params.get("k", 0.47)                       # resistance coefficient
+m = params.get("m", 0.100)                      # mass of stone
+initial_velocity = params.get("initial_velocity", 200.0)
+angle_of_projection = params.get("angle_of_projection", 45)
+# -------------------------
 
 initial_velocity = 20.0   # Initial velocity in m/s
 angle_of_projection = 45  # Angle in degrees
@@ -66,8 +73,6 @@ def numeric_linear(v0, theta, dt=0.05):
                          [x, v0x, y, v0y],
                          t_eval=t_eval)
 
-    print(solution.y[2])
-
     return solution.y[0], solution.y[2]
 
 
@@ -80,16 +85,16 @@ traj_numeric_x, traj_numeric_y = numeric_linear(
 fig, ax = plt.subplots()
 ax.set_xlim(0, max(max(traj_symbolic_x), max(traj_numeric_x)) + 1)
 ax.set_ylim(0, max(max(traj_symbolic_y), max(traj_numeric_y)) + 1)
-ax.set_title('Real-Time Trajectory of a Thrown Stone')
+ax.set_title('Trajectory of a Thrown Stone')
 ax.set_xlabel('Distance (m)')
 ax.set_ylabel('Height (m)')
-line1, = ax.plot([], [], lw=2, color='red', label='symbolic')
-line2, = ax.plot([], [], lw=2, color='blue', label='numerical')
+ax.plot(traj_symbolic_x, traj_symbolic_y, lw=2, color='red', label='Symbolic')
+ax.plot(traj_numeric_x, traj_numeric_y, lw=2, color='blue', label='Numerical')
 ax.legend()
 
 constants_text = f"""
-constants:
-g = {g} м/s^2
+Constants:
+g = {g} m/s^2
 k = {k}
 m = {m} kg
 Θ = {angle_of_projection} deg
@@ -98,29 +103,8 @@ v = {initial_velocity} m/s
 plt.text(0.05, 0.95, constants_text, transform=ax.transAxes, fontsize=8,
          verticalalignment='top', bbox=dict(facecolor='white', alpha=0.5))
 
-
-def init():
-    line1.set_data([], [])
-    line2.set_data([], [])
-    return line1, line2
-
-
-def animate(i):
-    line1.set_data(traj_symbolic_x[:i], traj_symbolic_y[:i])
-    line2.set_data(traj_numeric_x[:i], traj_numeric_y[:i])
-    return line1, line2
-
-
-ani = animation.FuncAnimation(fig, animate,
-                              frames=max(len(traj_symbolic_x),
-                                         len(traj_numeric_x)) + 1,
-                              init_func=init,
-                              blit=True,
-                              interval=50,
-                              repeat=False)
-
 plt.text(
-    0.1, 0.1, f"Landing point ({
-        max(x for (x, y) in zip(traj_numeric_x, traj_numeric_y)):.2f})")
+    0.1, 0.1, f"Landing point ({max(
+        x for (x, y) in zip(traj_numeric_x, traj_numeric_y)):.2f})")
 
 plt.show()
