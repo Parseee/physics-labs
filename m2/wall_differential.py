@@ -37,7 +37,7 @@ def contact_force(x):
 # -----------------------
 # Time integration
 # -----------------------
-times, xs, vs, F_conts, P_s = [0], [x0], [p / m], [], []
+times, xs, vs, F_conts, E_s = [0], [x0], [p / m], [], []
 
 
 def simulate():
@@ -48,7 +48,7 @@ def simulate():
     while t < t_max:
         F_cont = contact_force(x)
         F_conts.append(F_cont)
-        P_s.append(m * v)
+        E_s.append((m * v**2) / 2 + ((F_cont**2 / k_hooke)) / 2)
         a = F_cont / m
         v += a * dt
         x += v * dt
@@ -68,7 +68,7 @@ real_times = np.array(times)
 frame_times = np.linspace(real_times[0], real_times[-1], n_frames)
 frame_xs = np.interp(frame_times, real_times, xs)
 frame_Fs = np.interp(frame_times, real_times[:-1], F_conts)
-frame_Ps = np.interp(frame_times, real_times[:-1], P_s)
+frame_Es = np.interp(frame_times, real_times[:-1], E_s)
 
 interval_ms = 1000 * (frame_times[-1] - frame_times[0]) / n_frames
 
@@ -102,13 +102,13 @@ ax_force.set_xlabel("time [s]")
 ax_force.set_ylabel("contact force [N]")
 (line_force,) = ax_force.plot([], [], lw=2, color='red')
 
-# --- subplot: Momentum graph ---
+# --- subplot: Energy graph ---
 ax_momentum.set_xlim(frame_times[0], frame_times[-1])
-ax_momentum.set_ylim(min(frame_Ps) - 0.1*abs(min(frame_Ps)),
-                     max(frame_Ps) + 0.1*abs(max(frame_Ps)))
-ax_momentum.set_xlabel("time [s]")
-ax_momentum.set_ylabel("momentum [kg * m/s]")
-(line_momentum,) = ax_momentum.plot([], [], lw=2, color='red')
+ax_momentum.set_ylim(min(frame_Es) - 0.1*abs(min(frame_Es)),
+                     max(frame_Es) + 0.1*abs(max(frame_Es)))
+ax_momentum.set_xlabel("Time [s]")
+ax_momentum.set_ylabel("Total energy [J]")
+(line_momentum,) = ax_momentum.plot([], [], lw=2, color='orange')
 
 # -----------------------
 # Animation update functions
@@ -125,7 +125,7 @@ def init():
 def update(frame):
     ball.center = (frame_xs[frame], 0)
     line_force.set_data(frame_times[:frame], frame_Fs[:frame])
-    line_momentum.set_data(frame_times[:frame], frame_Ps[:frame])
+    line_momentum.set_data(frame_times[:frame], frame_Es[:frame])
     return ball, line_force, line_momentum
 
 
