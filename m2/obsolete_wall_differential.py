@@ -15,17 +15,11 @@ with open("config.json", "r") as f:
     ball_radius = params.get("r", 0.05)
     x0 = params.get("innitial_point_x", 0.25)
 
-# -----------------------
-# Simulation parameters
-# -----------------------
+
 dt = 1e-4
 t_max = 5.0
 wall_x_1 = 0.0
 wall_x_2 = 0.5
-
-# -----------------------
-# Physics function
-# -----------------------
 
 
 def contact_force(x):
@@ -34,9 +28,6 @@ def contact_force(x):
     return k_hooke * (l_dx - r_dx)
 
 
-# -----------------------
-# Time integration
-# -----------------------
 times, xs, vs, F_conts, E_s = [0], [x0], [p / m], [], []
 
 
@@ -60,9 +51,7 @@ def simulate():
 
 simulate()
 
-# -----------------------
 # Prepare animation data
-# -----------------------
 n_frames = 1000
 real_times = np.array(times)
 frame_times = np.linspace(real_times[0], real_times[-1], n_frames)
@@ -72,14 +61,11 @@ frame_Es = np.interp(frame_times, real_times[:-1], E_s)
 
 interval_ms = 1000 * (frame_times[-1] - frame_times[0]) / n_frames
 
-# -----------------------
-# Create figure with two subplots
-# -----------------------
 fig, (ax_ball, ax_force, ax_momentum) = plt.subplots(
     3, 1, figsize=(7, 6), gridspec_kw={'height_ratios': [1, 1, 1]})
 fig.tight_layout(pad=3.0)
 
-# --- Top subplot: Ball motion ---
+# Ball motion subplot
 ax_ball.set_xlim(-0.05, 0.55)
 ax_ball.set_ylim(-0.1, 0.1)
 ax_ball.set_aspect('equal')
@@ -94,7 +80,7 @@ ax_ball.plot([wall_x_2, wall_x_2], [-0.1, 0.1], 'k', lw=3)
 ball = Circle((x0, 0), radius=ball_radius, color='tab:blue')
 ax_ball.add_patch(ball)
 
-# --- subplot: Force graph ---
+# Force graph
 ax_force.set_xlim(frame_times[0], frame_times[-1])
 ax_force.set_ylim(min(frame_Fs) - 0.1*abs(min(frame_Fs)),
                   max(frame_Fs) + 0.1*abs(max(frame_Fs)))
@@ -102,17 +88,13 @@ ax_force.set_xlabel("time [s]")
 ax_force.set_ylabel("contact force [N]")
 (line_force,) = ax_force.plot([], [], lw=2, color='red')
 
-# --- subplot: Energy graph ---
+# Energy graph
 ax_momentum.set_xlim(frame_times[0], frame_times[-1])
 ax_momentum.set_ylim(min(frame_Es) - 0.1*abs(min(frame_Es)),
                      max(frame_Es) + 0.1*abs(max(frame_Es)))
 ax_momentum.set_xlabel("Time [s]")
 ax_momentum.set_ylabel("Total energy [J]")
 (line_momentum,) = ax_momentum.plot([], [], lw=2, color='orange')
-
-# -----------------------
-# Animation update functions
-# -----------------------
 
 
 def init():
