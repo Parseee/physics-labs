@@ -14,7 +14,7 @@ initial_velocity = params.get("initial_velocity", 20.0)
 angle_of_projection = params.get("angle_of_projection", 45)
 # -------------------------
 
-time_step = 0.05          # Time step in seconds
+time_step = 0.0005          # Time step in seconds
 
 gamma = k / m
 
@@ -24,11 +24,10 @@ if gamma == 0:
 
 def symbolic_linear(v0, theta, dt=0.0005):
     theta_rad = np.radians(theta)
+    print(theta_rad)
 
     vx = v0 * np.cos(theta_rad)
     vy = v0 * np.sin(theta_rad)
-    if (theta_rad == np.pi / 2):
-        vx = 0
 
     x, y = 0.0, 0.0
 
@@ -87,15 +86,7 @@ def numeric_linear(v0, theta, dt=0.05):
 
     if len(solution.y) > 0:
         print(solution)
-        x_vals = solution.y[0]
-        y_vals = solution.y[2]
-
-        # --- snap very small values to 0 ---
-        y_vals[np.isclose(y_vals, 0, atol=1e-12)] = 0.0
-        x_vals[np.isclose(x_vals, 0, atol=1e-12)] = 0.0
-        # -----------------------------------
-
-        return x_vals, y_vals
+        return solution.y[0], solution.y[2]
     return [0], [0]
 
 
