@@ -58,7 +58,7 @@ F_conts = np.array([contact_force(x) for x in xs])
 E_s = 0.5 * m * vs**2 + 0.5 * (F_conts**2 / k_hooke)
 
 # Подготовка данных для анимации
-n_frames = 1000
+n_frames = 10000
 frame_times = np.linspace(times[0], times[-1], n_frames)
 frame_xs = np.interp(frame_times, times, xs)
 frame_Fs = np.interp(frame_times, times, F_conts)

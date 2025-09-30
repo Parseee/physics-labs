@@ -14,7 +14,7 @@ initial_velocity = params.get("initial_velocity", 20.0)
 angle_of_projection = params.get("angle_of_projection", 45)
 # -------------------------
 
-time_step = 0.05          # Time step in seconds
+time_step = 0.0005          # Time step in seconds
 
 gamma = k / m
 

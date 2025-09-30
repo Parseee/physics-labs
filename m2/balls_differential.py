@@ -81,7 +81,7 @@ solution = solve_ivp(ode_system, [0, 5.0],
                      state0, max_step=1e-4, dense_output=True)
 
 # Получаем траектории
-n_frames = 2000
+n_frames = 10000
 frame_times = np.linspace(0, solution.t[-1], n_frames)
 sol_values = solution.sol(frame_times)
 
