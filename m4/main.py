@@ -5,25 +5,22 @@ import matplotlib.animation as animation
 from matplotlib.patches import Circle
 from scipy.integrate import solve_ivp
 
-# ---------------------------------------------------
-# LOAD PARAMETERS
-# ---------------------------------------------------
 with open("config.json", "r") as f:
     params = json.load(f)
 
 g = params.get("g", 9.81)
 m = params.get("m", 0.5)
 R = params.get("R", 0.1)
-mu = params.get("mu", 0.2)
+mu = params.get("mu", 0.8)
 x0 = params.get("x0", 0.0)
 y0 = params.get("y0", 0.0)
-vx0 = params.get("vx0", 0)
-vy0 = params.get("vy0", 10)
-w0 = params.get("w0", 10.0)
-theta = np.radians(params.get("alpha", 25))  # in x-axis
+vx0 = params.get("vx0", 10)
+vy0 = params.get("vy0", 0)
+w0 = params.get("w0", -260.0)
+theta = np.radians(params.get("alpha", 0))  # in x-axis
 
 sph_inertia = (2/5) * m * R**2
-total_time = 3.0
+total_time = 10.0
 tol = 1e-4
 
 
@@ -32,32 +29,36 @@ def rhs(t, S):
     v = np.array([vx, vy])
     speed = np.linalg.norm(v)
 
-    # if speed < 1e-8 or abs(w) < 1e-8:
-    #     return [0, 0, 0, 0, 0]
+    e_s = np.array([np.cos(theta), np.sin(theta)])
+    N = m * g * np.cos(theta)
 
-    slip_dir = np.sign(speed - w * R)
-    no_slip = abs(speed - w * R) < tol
+    v_parallel = v.dot(e_s)
+    slip = v_parallel - w * R
 
-    if no_slip:
-        print("no slip")
-        k = 0.2  # rolling resistance coefficient
-        f_roll = -k * v
-        ax, ay = f_roll[0] / m + g * np.sin(theta), f_roll[1] / m
-        alpha = 0
+    if abs(slip) < tol:
+        a_scalar = m * g * np.sin(theta) / (m + sph_inertia / R**2)
+
+        F_s = - (sph_inertia / R**2) * a_scalar
+        if abs(F_s) <= mu * N:
+            a_vec = a_scalar * e_s
+            alpha = a_scalar / R
+            ax, ay = a_vec[0], a_vec[1]
+            return [vx, vy, ax, ay, alpha]
+
+    if abs(slip) < tol and speed < tol:
+        slip_sign = np.sign(slip)
     else:
-        print("no slip")
-        f = -mu * m * g * v / speed
-        ax = f[0] / m + g * np.sin(theta)
-        ay = f[1] / m
-        alpha = (np.linalg.norm(f) * R) / sph_inertia * np.sign(w)
+        slip_sign = np.sign(slip) if abs(slip) > 0 else (
+            np.sign(v_parallel) if abs(v_parallel) > 0 else 1.0)
 
-        F_f = mu * m * g
-        f_vec = -F_f * v / speed if speed > 0 else np.array([0, 0])
+    F_f = mu * N
+    f_vec = - slip_sign * F_f * e_s
 
-        ax = f_vec[0] / m + g * np.sin(theta)
-        ay = f_vec[1] / m
+    a_gravity = g * np.sin(theta) * e_s
+    a_vec = f_vec / m + a_gravity
 
-        alpha = slip_dir * (F_f * R) / sph_inertia
+    ax, ay = a_vec[0], a_vec[1]
+    alpha = slip_sign * (F_f * R) / sph_inertia
 
     return [vx, vy, ax, ay, alpha]
 
@@ -83,14 +84,12 @@ frame_y = np.interp(frame_t, t, y)
 
 interval_ms = 1000 * (frame_t[-1] - frame_t[0]) / frames
 
-# ---------------------------------------------------
-# SINGLE-PLOT TABLE + ANIMATED BALL
-# ---------------------------------------------------
+
 fig, (ax_sim, ax_speed, ax_energy) = plt.subplots(
     3, 1, figsize=(7, 9), gridspec_kw={'height_ratios': [4, 1.5, 1.5]})
 
-ax_sim.set_xlim(min(x) * 0.9, max(x) * 1.1)
-ax_sim.set_ylim(min(y) * 0.9, max(y) * 1.1)
+ax_sim.set_xlim(min(x) - 0.5, max(x) + 0.5)
+ax_sim.set_ylim(min(y) - 0.5, max(y) + 0.5)
 ax_sim.set_aspect('equal')  # sides ratio
 ax_sim.set_title("Ball Motion on Table")
 ax_sim.set_xlabel("x [m]")
