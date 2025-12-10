@@ -5,6 +5,8 @@ import matplotlib.animation as animation
 from matplotlib.patches import Circle
 from scipy.integrate import solve_ivp
 
+# TODO: fix the unstoppable ball movement
+
 with open("config.json", "r") as f:
     params = json.load(f)
 
@@ -15,8 +17,8 @@ mu = params.get("mu", 0.8)
 x0 = params.get("x0", 0.0)
 y0 = params.get("y0", 0.0)
 vx0 = params.get("vx0", 10)
-vy0 = params.get("vy0", 0)
-w0 = params.get("w0", -260.0)
+vy0 = params.get("vy0", 10)
+w0 = params.get("w0", 10.0)
 theta = np.radians(params.get("alpha", 0))  # in x-axis
 
 sph_inertia = (2/5) * m * R**2
@@ -29,21 +31,24 @@ def rhs(t, S):
     v = np.array([vx, vy])
     speed = np.linalg.norm(v)
 
+    if speed < tol and w < tol:
+        return [0, 0, 0, 0, 0]
+
     e_s = np.array([np.cos(theta), np.sin(theta)])
     N = m * g * np.cos(theta)
 
     v_parallel = v.dot(e_s)
     slip = v_parallel - w * R
 
-    if abs(slip) < tol:
-        a_scalar = m * g * np.sin(theta) / (m + sph_inertia / R**2)
+    # if abs(slip) < tol:
+    #     a_scalar = m * g * np.sin(theta) / (m + sph_inertia / R**2)
 
-        F_s = - (sph_inertia / R**2) * a_scalar
-        if abs(F_s) <= mu * N:
-            a_vec = a_scalar * e_s
-            alpha = a_scalar / R
-            ax, ay = a_vec[0], a_vec[1]
-            return [vx, vy, ax, ay, alpha]
+    #     F_s = - (sph_inertia / R**2) * a_scalar
+    #     if abs(F_s) <= mu * N:
+    #         a_vec = a_scalar * e_s
+    #         alpha = a_scalar / R
+    #         ax, ay = a_vec[0], a_vec[1]
+    #         return [vx, vy, ax, ay, alpha]
 
     if abs(slip) < tol and speed < tol:
         slip_sign = np.sign(slip)
@@ -90,7 +95,7 @@ fig, (ax_sim, ax_speed, ax_energy) = plt.subplots(
 
 ax_sim.set_xlim(min(x) - 0.5, max(x) + 0.5)
 ax_sim.set_ylim(min(y) - 0.5, max(y) + 0.5)
-ax_sim.set_aspect('equal')  # sides ratio
+ax_sim.set_aspect('equal')
 ax_sim.set_title("Ball Motion on Table")
 ax_sim.set_xlabel("x [m]")
 ax_sim.set_ylabel("y [m]")
