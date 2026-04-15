@@ -1,0 +1,13 @@
+[project]
+name = "physics-lab-m2-vacuum-diode"
+version = "0.1.0"
+description = "M2 vacuum diode/triode simulation"
+requires-python = ">=3.12"
+dependencies = [
+    "matplotlib>=3.9.0",
+    "numpy>=2.0.0",
+    "scipy>=1.14.0",
+]
+
+[project.scripts]
+simulate = "main:main"
