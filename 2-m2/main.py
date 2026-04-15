@@ -59,15 +59,15 @@ def main() -> None:
     )
     print("Single-point run:")
     print(f"  Va = {V_ANODE:.1f} V, Vg = {V_GRID:.1f} V, grid_enabled={GRID_ENABLED}")
-    print(f"  Current (no space-charge): {base_result.current_a * 1e3:.3f} mA")
-    print(f"  Collection efficiency: {base_result.collection_efficiency:.3f}")
-    print(f"  Mean anode speed: {base_result.mean_anode_speed / 1e6:.3f} x10^6 m/s")
+    print(f"  Current (no space-charge): {base_result['current_a'] * 1e3:.3f} mA")
+    print(f"  Collection efficiency: {base_result['collection_efficiency']:.3f}")
+    print(f"  Mean anode speed: {base_result['mean_anode_speed'] / 1e6:.3f} x10^6 m/s")
     print()
 
     if ANIMATION_ENABLED and "agg" not in plt.get_backend().lower():
         _ANIMATIONS.append(animate_electron_motion(
-            t=traj.t,
-            x_hist=traj.x,
+            t=traj["t"],
+            x_hist=traj["x"],
             gap_length=GAP_LENGTH,
             max_particles=ANIMATION_MAX_PARTICLES,
             trail_points=ANIMATION_TRAIL_POINTS,
@@ -87,7 +87,7 @@ def main() -> None:
             v_grid=V_GRID,
             grid_enabled=GRID_ENABLED,
         )
-        i_no_sc[i] = res.current_a
+        i_no_sc[i] = res["current_a"]
         if RUN_SPACE_CHARGE and i_sc is not None:
             sc = run_space_charge_pic(
                 v_anode=float(va),
@@ -95,8 +95,8 @@ def main() -> None:
                 v_grid=V_GRID,
                 grid_enabled=GRID_ENABLED,
             )
-            i_sc_raw[i] = sc.current_a
-            i_sc[i] = min(sc.current_a, i_cl[i], emission_current())
+            i_sc_raw[i] = sc["current_a"]
+            i_sc[i] = min(sc["current_a"], i_cl[i], emission_current())
         print(f"  Va={va:6.1f} V | I_no_sc={i_no_sc[i]*1e3:8.3f} mA", end="")
         if RUN_SPACE_CHARGE and i_sc is not None:
             print(f" | I_sc_raw={i_sc_raw[i]*1e3:8.3f} mA | I_sc={i_sc[i]*1e3:8.3f} mA")
@@ -114,9 +114,9 @@ def main() -> None:
         x=x,
         phi=phi,
         e=e,
-        t=traj.t,
-        x_hist=traj.x,
-        v_hist=traj.v,
+        t=traj["t"],
+        x_hist=traj["x"],
+        v_hist=traj["v"],
         va=VA_SWEEP,
         i_no_sc=i_no_sc,
         i_sc=i_sc,
@@ -139,7 +139,7 @@ def main() -> None:
                 v_grid=float(vg),
                 grid_enabled=True,
             )
-            print(f"  Vg={vg:6.1f} V -> Ia={res.current_a*1e3:8.3f} mA")
+            print(f"  Vg={vg:6.1f} V -> Ia={res['current_a']*1e3:8.3f} mA")
 
     plt.show()
 
