@@ -1,10 +1,4 @@
 {
-  "constants": {
-    "eps0": 8.8541878128e-12,
-    "e_charge": 1.602176634e-19,
-    "e_mass": 9.1093837015e-31,
-    "kb": 1.380649e-23
-  },
   "emission": {
     "richardson_a": 1200000.0,
     "work_function_ev": 4.0,
@@ -20,7 +14,7 @@
   "electrodes": {
     "v_cathode": 0.0,
     "v_anode": 120.0,
-    "v_grid": -200.0
+    "v_grid": -0.0
   },
   "numerics": {
     "n_grid": 160,
@@ -35,10 +29,7 @@
     "thermal_sigma_factor": 1.0
   },
   "sweep": {
-    "va_sweep": [20.0, 50.0, 80.0, 110.0, 140.0, 170.0, 200.0, 230.0, 260.0],
-    "run_space_charge": true,
-    "run_triode_sweep": false,
-    "vg_sweep": [-30.0, -15.0, 0.0, 15.0, 30.0, 45.0, 60.0]
+    "va_sweep": [20.0, 50.0, 80.0, 110.0, 140.0, 170.0, 200.0, 230.0, 260.0]
   },
   "animation": {
     "enabled": true,

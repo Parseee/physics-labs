@@ -17,11 +17,11 @@ def _load_params(path: Path = PARAMS_PATH) -> dict[str, Any]:
 
 _P = _load_params()
 
-# Constants
-EPS0 = float(_P["constants"]["eps0"])
-E_CHARGE = float(_P["constants"]["e_charge"])
-E_MASS = float(_P["constants"]["e_mass"])
-KB = float(_P["constants"]["kb"])
+# Fundamental physical constants (hardcoded; not user-configurable)
+EPS0 = 8.8541878128e-12
+E_CHARGE = 1.602176634e-19
+E_MASS = 9.1093837015e-31
+KB = 1.380649e-23
 
 # Emission
 RICHARDSON_A = float(_P["emission"]["richardson_a"])
@@ -54,9 +54,6 @@ THERMAL_SIGMA_FACTOR = float(_P["particles"]["thermal_sigma_factor"])
 
 # Sweep
 VA_SWEEP = np.asarray(_P["sweep"]["va_sweep"], dtype=float)
-RUN_SPACE_CHARGE = bool(_P["sweep"]["run_space_charge"])
-RUN_TRIODE_SWEEP = bool(_P["sweep"]["run_triode_sweep"])
-VG_SWEEP = np.asarray(_P["sweep"]["vg_sweep"], dtype=float)
 
 # Animation
 ANIMATION_ENABLED = bool(_P["animation"]["enabled"])

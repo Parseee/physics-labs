@@ -11,13 +11,10 @@ from config import (
     CATHODE_AREA,
     GAP_LENGTH,
     GRID_ENABLED,
-    RUN_SPACE_CHARGE,
-    RUN_TRIODE_SWEEP,
     V_ANODE,
     V_CATHODE,
     V_GRID,
     VA_SWEEP,
-    VG_SWEEP,
     emission_current,
 )
 from fields import child_langmuir_current
@@ -29,6 +26,7 @@ from visualization import (
 )
 
 _ANIMATIONS = []
+RUN_SPACE_CHARGE = True
 
 
 def _power_fit_langmuir(va: np.ndarray, ia: np.ndarray) -> tuple[float, float, float, np.ndarray]:
@@ -141,19 +139,6 @@ def main() -> None:
     )
     if stage3_result is not None:
         plot_stage3_window(stage3_result)
-
-    # Optional triode sweep
-    if RUN_TRIODE_SWEEP:
-        print()
-        print("Triode sweep (grid modulation):")
-        for vg in VG_SWEEP:
-            res, _, _ = estimate_current_non_interacting(
-                v_anode=V_ANODE,
-                v_cathode=V_CATHODE,
-                v_grid=float(vg),
-                grid_enabled=True,
-            )
-            print(f"  Vg={vg:6.1f} V -> Ia={res['current_a']*1e3:8.3f} mA")
 
     plt.show()
 

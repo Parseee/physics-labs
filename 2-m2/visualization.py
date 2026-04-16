@@ -22,7 +22,7 @@ def plot_combined_dashboard(
 ):
     fig, axs = plt.subplots(3, 2, figsize=(12, 8))
     fig.suptitle(
-        "M2 dashboard: stages 1, 2 and 4 (excluding stage 3)", fontsize=14)
+        "M2", fontsize=14)
 
     axs[0, 0].plot(x * 1e3, phi, lw=2)
     axs[0, 0].set_title("Stage 1: potential")
@@ -85,7 +85,9 @@ def plot_combined_dashboard(
     axs[2, 1].set_xlabel("ln(Va)")
     axs[2, 1].set_ylabel("ln(Ia)")
     axs[2, 1].grid(alpha=0.3)
-    axs[2, 1].legend()
+    handles, labels = axs[2, 1].get_legend_handles_labels()
+    if handles:
+        axs[2, 1].legend()
 
     fig.tight_layout(rect=(0.0, 0.0, 1.0, 0.95))
 
