@@ -20,13 +20,11 @@
   "electrodes": {
     "v_cathode": 0.0,
     "v_anode": 120.0,
-    "v_grid": 0.0
+    "v_grid": -200.0
   },
   "numerics": {
-    "n_grid": 161,
-    "poisson_max_iter": 500,
-    "poisson_tol": 1e-5,
-    "sor_omega": 1.85
+    "n_grid": 160,
+    "poisson_tol": 1e-5
   },
   "particles": {
     "dt": 8e-12,
@@ -39,7 +37,7 @@
   "sweep": {
     "va_sweep": [20.0, 50.0, 80.0, 110.0, 140.0, 170.0, 200.0, 230.0, 260.0],
     "run_space_charge": true,
-    "run_triode_sweep": true,
+    "run_triode_sweep": false,
     "vg_sweep": [-30.0, -15.0, 0.0, 15.0, 30.0, 45.0, 60.0]
   },
   "animation": {

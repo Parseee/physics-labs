@@ -13,9 +13,7 @@ from config import (
     GRID_POSITION,
     GRID_TRANSPARENCY,
     N_GRID,
-    POISSON_MAX_ITER,
     POISSON_TOL,
-    SOR_OMEGA,
     V_ANODE,
     V_CATHODE,
     V_GRID,
@@ -46,7 +44,6 @@ def build_triode_fixed_nodes(
     idx = int(np.argmin(np.abs(x - GRID_POSITION)))
     x_rel = float(x[idx] / x[-1]) if x[-1] != 0 else 0.5
     v_vac = v_cathode + (v_anode - v_cathode) * x_rel
-    # Transparent grid should weakly perturb the vacuum profile, not fully clamp it.
     v_eff = (1.0 - influence) * v_vac + influence * v_grid
     nodes[idx] = float(v_eff)
     return nodes
@@ -58,12 +55,9 @@ def solve_potential_1d(
     v_anode: float,
     rho: np.ndarray | None = None,
     fixed_nodes: dict[int, float] | None = None,
-    max_iter: int = POISSON_MAX_ITER,
     tol: float = POISSON_TOL,
-    omega: float = SOR_OMEGA,
 ) -> np.ndarray:
     # Keep these parameters in signature for compatibility with existing calls.
-    _ = (max_iter, omega)
 
     x = np.asarray(x, dtype=float)
     n = x.size

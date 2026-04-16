@@ -25,6 +25,7 @@ from simulation import estimate_current_non_interacting, run_space_charge_pic
 from visualization import (
     animate_electron_motion,
     plot_combined_dashboard,
+    plot_stage3_window,
 )
 
 _ANIMATIONS = []
@@ -33,6 +34,8 @@ _ANIMATIONS = []
 def _power_fit_langmuir(va: np.ndarray, ia: np.ndarray) -> tuple[float, float, float, np.ndarray]:
     high_va = va >= np.quantile(va, 0.45)
     mask = (va > 0) & (ia > 0) & high_va
+    if np.count_nonzero(mask) < 2:
+        return 0.0, 0.0, 0.0, np.zeros_like(va, dtype=float)
     lv = np.log(va[mask])
     li = np.log(ia[mask])
     slope, intercept = np.polyfit(lv, li, deg=1)
@@ -73,6 +76,15 @@ def main() -> None:
             trail_points=ANIMATION_TRAIL_POINTS,
             interval_ms=ANIMATION_INTERVAL_MS,
         ))
+
+    stage3_result = None
+    if RUN_SPACE_CHARGE:
+        stage3_result = run_space_charge_pic(
+            v_anode=V_ANODE,
+            v_cathode=V_CATHODE,
+            v_grid=V_GRID,
+            grid_enabled=GRID_ENABLED,
+        )
 
     # Stage 4: I-V sweep
     i_no_sc = np.zeros_like(VA_SWEEP, dtype=float)
@@ -127,6 +139,8 @@ def main() -> None:
         intercept=intercept,
         r2=r2,
     )
+    if stage3_result is not None:
+        plot_stage3_window(stage3_result)
 
     # Optional triode sweep
     if RUN_TRIODE_SWEEP:

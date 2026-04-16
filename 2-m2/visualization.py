@@ -20,8 +20,9 @@ def plot_combined_dashboard(
     intercept,
     r2,
 ):
-    fig, axs = plt.subplots(3, 2, figsize=(16, 13))
-    fig.suptitle("M2 dashboard: stages 1, 2 and 4 (excluding stage 3)", fontsize=14)
+    fig, axs = plt.subplots(3, 2, figsize=(12, 8))
+    fig.suptitle(
+        "M2 dashboard: stages 1, 2 and 4 (excluding stage 3)", fontsize=14)
 
     axs[0, 0].plot(x * 1e3, phi, lw=2)
     axs[0, 0].set_title("Stage 1: potential")
@@ -65,17 +66,59 @@ def plot_combined_dashboard(
 
     i_ref = i_no_sc if i_sc is None else i_sc
     mask = (va > 0) & (i_ref > 0) & (va >= np.quantile(va, 0.45))
-    lv = np.log(va[mask])
-    li = np.log(i_ref[mask])
-    axs[2, 1].plot(lv, li, "o", label="Simulation")
-    axs[2, 1].plot(lv, slope * lv + intercept, "-", label=f"n={slope:.3f}, R²={r2:.4f}")
+    if np.count_nonzero(mask) >= 2:
+        lv = np.log(va[mask])
+        li = np.log(i_ref[mask])
+        axs[2, 1].plot(lv, li, "o", label="Simulation")
+        axs[2, 1].plot(lv, slope * lv + intercept, "-",
+                       label=f"n={slope:.3f}, R²={r2:.4f}")
+    else:
+        axs[2, 1].text(
+            0.5,
+            0.5,
+            "No positive current points\nfor log-fit (triode locked)",
+            ha="center",
+            va="center",
+            transform=axs[2, 1].transAxes,
+        )
     axs[2, 1].set_title("Stage 4: Langmuir check")
     axs[2, 1].set_xlabel("ln(Va)")
     axs[2, 1].set_ylabel("ln(Ia)")
     axs[2, 1].grid(alpha=0.3)
     axs[2, 1].legend()
 
-    fig.tight_layout(rect=[0, 0, 1, 0.97])
+    fig.tight_layout(rect=(0.0, 0.0, 1.0, 0.95))
+
+
+def plot_stage3_window(sc_result):
+    x = np.asarray(sc_result["x"], dtype=float) * 1e3
+    phi = np.asarray(sc_result["phi"], dtype=float)
+    e = np.asarray(sc_result["e"], dtype=float) / 1e3
+
+    fig, axs = plt.subplots(1, 2, figsize=(8.8, 3.6))
+    fig.suptitle("Stage 3 (space-charge): separate view", fontsize=12)
+
+    if x.size and phi.size:
+        axs[0].plot(x, phi, lw=1.8)
+    else:
+        axs[0].text(0.5, 0.5, "No data", ha="center",
+                    va="center", transform=axs[0].transAxes)
+    axs[0].set_title("Final potential")
+    axs[0].set_xlabel("x [mm]")
+    axs[0].set_ylabel("phi [V]")
+    axs[0].grid(alpha=0.3)
+
+    if x.size and e.size:
+        axs[1].plot(x, e, lw=1.8, color="tab:red")
+    else:
+        axs[1].text(0.5, 0.5, "No data", ha="center",
+                    va="center", transform=axs[1].transAxes)
+    axs[1].set_title("Final electric field")
+    axs[1].set_xlabel("x [mm]")
+    axs[1].set_ylabel("E [kV/m]")
+    axs[1].grid(alpha=0.3)
+
+    fig.tight_layout(rect=[0, 0, 1, 0.92])
 
 
 def animate_electron_motion(t, x_hist, gap_length, max_particles=24, trail_points=24, interval_ms=20):
@@ -90,12 +133,14 @@ def animate_electron_motion(t, x_hist, gap_length, max_particles=24, trail_point
     ax.set_xlim(0.0, gap_length * 1e3)
     ax.grid(axis="x", alpha=0.25)
     ax.axvline(0.0, lw=2, alpha=0.9, label="Cathode")
-    ax.axvline(gap_length * 1e3, lw=2, alpha=0.9, color="tab:red", label="Anode")
+    ax.axvline(gap_length * 1e3, lw=2, alpha=0.9,
+               color="tab:red", label="Anode")
     ax.legend(loc="upper center", ncol=2)
 
     y_levels = np.linspace(-0.75, 0.75, n_particles)
     dots = [ax.plot([], [], "o", ms=5)[0] for _ in range(n_particles)]
-    trails = [ax.plot([], [], "-", lw=1.0, alpha=0.35)[0] for _ in range(n_particles)]
+    trails = [ax.plot([], [], "-", lw=1.0, alpha=0.35)[0]
+              for _ in range(n_particles)]
     time_text = ax.text(0.98, 0.92, "", transform=ax.transAxes, ha="right")
 
     def update(frame):

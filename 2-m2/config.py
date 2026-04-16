@@ -42,9 +42,7 @@ V_GRID = float(_P["electrodes"]["v_grid"])
 
 # Numerics
 N_GRID = int(_P["numerics"]["n_grid"])
-POISSON_MAX_ITER = int(_P["numerics"]["poisson_max_iter"])
 POISSON_TOL = float(_P["numerics"]["poisson_tol"])
-SOR_OMEGA = float(_P["numerics"]["sor_omega"])
 
 # Particle simulation
 DT = float(_P["particles"]["dt"])
