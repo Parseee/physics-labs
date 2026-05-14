@@ -70,6 +70,8 @@ def main() -> None:
             t=traj["t"],
             x_hist=traj["x"],
             gap_length=GAP_LENGTH,
+            x_field=x,
+            e_field=e,
             max_particles=ANIMATION_MAX_PARTICLES,
             trail_points=ANIMATION_TRAIL_POINTS,
             interval_ms=ANIMATION_INTERVAL_MS,

@@ -14,7 +14,7 @@
   "electrodes": {
     "v_cathode": 0.0,
     "v_anode": 120.0,
-    "v_grid": -0.0
+    "v_grid": 0.0
   },
   "numerics": {
     "n_grid": 160,
@@ -23,7 +23,7 @@
   "particles": {
     "dt": 8e-12,
     "t_end": 2e-9,
-    "n_test_particles": 700,
+    "n_test_particles": 70,
     "n_trajectories_to_store": 30,
     "inject_macro_per_step": 12,
     "thermal_sigma_factor": 1.0

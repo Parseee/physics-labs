@@ -98,7 +98,7 @@ def plot_stage3_window(sc_result):
     e = np.asarray(sc_result["e"], dtype=float) / 1e3
 
     fig, axs = plt.subplots(1, 2, figsize=(8.8, 3.6))
-    fig.suptitle("Stage 3 (space-charge): separate view", fontsize=12)
+    fig.suptitle("Stage 3 (space-charge)", fontsize=12)
 
     if x.size and phi.size:
         axs[0].plot(x, phi, lw=1.8)
@@ -123,7 +123,16 @@ def plot_stage3_window(sc_result):
     fig.tight_layout(rect=[0, 0, 1, 0.92])
 
 
-def animate_electron_motion(t, x_hist, gap_length, max_particles=24, trail_points=24, interval_ms=20):
+def animate_electron_motion(
+    t,
+    x_hist,
+    gap_length,
+    x_field=None,
+    e_field=None,
+    max_particles=24,
+    trail_points=24,
+    interval_ms=20,
+):
     n_particles = min(max_particles, x_hist.shape[0])
     x = x_hist[:n_particles]
 
@@ -134,6 +143,23 @@ def animate_electron_motion(t, x_hist, gap_length, max_particles=24, trail_point
     ax.set_ylim(-1.0, 1.0)
     ax.set_xlim(0.0, gap_length * 1e3)
     ax.grid(axis="x", alpha=0.25)
+
+    if x_field is not None and e_field is not None and len(x_field) and len(e_field):
+        x_mm = np.asarray(x_field, dtype=float) * 1e3
+        e_kvm = np.asarray(e_field, dtype=float) / 1e3
+        field_img = np.tile(e_kvm, (40, 1))
+        im = ax.imshow(
+            field_img,
+            extent=[x_mm.min(), x_mm.max(), -1.0, 1.0],
+            origin="lower",
+            aspect="auto",
+            cmap="coolwarm",
+            alpha=0.28,
+            zorder=0,
+        )
+        cbar = fig.colorbar(im, ax=ax, fraction=0.04, pad=0.02)
+        cbar.set_label("E [kV/m]")
+
     ax.axvline(0.0, lw=2, alpha=0.9, label="Cathode")
     ax.axvline(gap_length * 1e3, lw=2, alpha=0.9,
                color="tab:red", label="Anode")
