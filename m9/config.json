@@ -1,0 +1,21 @@
+{
+  "lens": {
+    "focal_length": 0.06,
+    "x_position": 0.0
+  },
+  "object": {
+    "x_position": -0.145,
+    "triangle_height": 0.01,
+    "triangle_width": 0.008
+  },
+  "plot": {
+    "y_range": 0.012,
+    "z_range": 0.012,
+    "grid_points": 500,
+    "ray_y_min": -0.004,
+    "ray_y_max": 0.004,
+    "ray_count": 10,
+    "fig_width_in": 14.0,
+    "fig_height_in": 4.5
+  }
+}
